@@ -7,6 +7,9 @@ import {
 	getPokemonsByFilter,
 	getPokemonBySortedByWeight,
 	getPokemonBySortedByHeight,
+	getPokemonsWithoutEvolution,
+	getPokemonsTopFrenchNameLength,
+	getAverageHp,
 } from '../models/pokemonsModel.js';
 
 import removeBlankAttributes  from "../utils/removeBlankAttributes.js";
@@ -75,7 +78,6 @@ const updateOnePokemonById = async (req, res) => {
 const deleteOnePokemonById = async (req, res) => {
 	const id = req.params.id;
 
-	// Vérifier si l'ID est valide
 	if (!ObjectId.isValid(id)) {
 		return res.status(400).json({ error: true, message: "ID invalide" });
 	}
@@ -140,6 +142,48 @@ const getPokemonsSortedByheight = async (req, res) => {
     }
 };
 
+////
+ const getPokemonsWithoutEvolutionCtl = async (req, res) => {
+  const typesParam = req.query.types;
+
+  if (!typesParam) {
+    return res.status(400).json({ error: true, message: "Missing 'types' parameter" });
+  }
+
+  const typesArray = typesParam.split(',').map(type => type.trim());
+
+  const pokemons = await getPokemonsWithoutEvolution(typesArray);
+
+  if (pokemons?.error) {
+    return res.status(500).json({ error: true, message: pokemons.message });
+  }
+  console.log(typesArray);
+
+  res.json(pokemons);
+};
+///
+const getPokemonsTopFrenchNameLengthCtl = async (req, res) => {
+	const limit = parseInt(req.query.limit) 
+
+  const pokemons = await getPokemonsTopFrenchNameLength(limit);
+
+  if (pokemons?.error) {
+    return res.status(500).json({ error: true, message: pokemons.message });
+  }
+
+  res.json(pokemons);
+};
+
+ const getAverageHpController = async (req, res) => {
+  const result = await getAverageHp();
+
+  if (result?.error) {
+    return res.status(500).json({ error: true, message: result.message });
+  }
+
+  res.json(result);
+};
+
 export { createOnePokemon, 
 	getOnePokemonPage,
 	getOnePokemonById,
@@ -147,4 +191,7 @@ export { createOnePokemon,
 	deleteOnePokemonById,
 	getPokemonsFiltered,
 	getPokemonsSortedByWeight,
-	getPokemonsSortedByheight,}
+	getPokemonsSortedByheight,
+	getPokemonsWithoutEvolutionCtl,
+	getPokemonsTopFrenchNameLengthCtl,
+	getAverageHpController}

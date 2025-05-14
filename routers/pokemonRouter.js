@@ -8,6 +8,8 @@ import {
 	getPokemonsFiltered,
 	getPokemonsSortedByWeight,
 	getPokemonsSortedByheight,
+	getPokemonsWithoutEvolutionCtl,
+	getPokemonsTopFrenchNameLengthCtl,
 } from '../controllers/pokemonController.js';
 
 const router = express.Router();
@@ -17,6 +19,8 @@ router.get('/', getOnePokemonPage);
 router.get('/filter',getPokemonsFiltered );
 router.get('/top-weight', getPokemonsSortedByWeight);
 router.get('/top-height', getPokemonsSortedByheight);
+router.get('/without-evolution', getPokemonsWithoutEvolutionCtl);
+router.get('/top-french-name-length', getPokemonsTopFrenchNameLengthCtl);
 router.get('/:id', getOnePokemonById);    
 router.put('/:id', updateOnePokemonById);
 router.delete('/:id', deleteOnePokemonById);

@@ -125,7 +125,14 @@ async function getPokemonBySortedByWeight(limit) {
 
 	const pokemon = await pokemons.aggregate([
 		{ $sort: { 'profile.weight': -1 } },
-		{ $limit: limit } 
+		{ $limit: limit },
+		{
+			$project: {
+				_id: 0,
+				"name.french": 1,
+				'profile.weight': -1 
+			  }
+		  }
 	]);
 
 	const pokemonArray = await pokemon.toArray();
@@ -152,7 +159,15 @@ async function getPokemonBySortedByHeight(limit) {
 
 	const pokemon = await pokemons.aggregate([
 		{ $sort: { 'profile.height': -1 } },
-		{ $limit: limit } 
+		{ $limit: limit },
+		{
+			$project: {
+				_id: 0,
+				"name.french": 1,
+				'profile.height': -1 
+			  }
+		  }
+		
 	]);
 
 	const pokemonArray = await pokemon.toArray();
@@ -163,8 +178,130 @@ async function getPokemonBySortedByHeight(limit) {
 	 } catch (error) {
 -	res.status(500).json({ message: 'Erreur serveur', error: error.message });
 }
+}
 
+async function getPokemonsWithoutEvolution(typesArray) {
+  let mongoClient;
+  try {
+    mongoClient = await connectToMongoDB(process.env.DB_URI);
+    const db = mongoClient.db('media');
+    const pokemons = db.collection('pokemons');
+
+    const result = await pokemons.find({
+      type: { $in: typesArray }, 
+	  evolution: {} 
+      
+    }).toArray();
+
+    return result;
+
+  } catch (error) {
+    return { error: true, message: error.message };
+  } finally {
+    mongoClient.close();
+  }
+}
+
+ async function getPokemonsTopFrenchNameLength(limit) {
+  let mongoClient;
+  try {
+    mongoClient = await connectToMongoDB(process.env.DB_URI);
+    const db = mongoClient.db('media');
+    const pokemons = db.collection('pokemons');
+
+    const result = await pokemons.aggregate([
+      {
+        $addFields: {
+          nameLength: { $strLenCP: "$name.french" }
+        }
+      },
+      { $sort: { nameLength: -1 } },
+      { $limit: limit },
+      {
+        $project: {
+			_id: 0,
+			"name.french": 1,
+			nameLength: 1
+		  }
+      }
+    ]).toArray();
+
+    return result;
+
+  } catch (error) {
+    return { error: true, message: error.message };
+  } finally {
+    mongoClient.close();
+  }
 }
 
 
-export { getPokemon,getPokemonById, ajoutPokemon,updateOnePokemon,deleteOnePokemon,getPokemonsByFilter,getPokemonBySortedByWeight,getPokemonBySortedByHeight };
+ async function getAverageHp() {
+  let mongoClient;
+  try {
+    mongoClient = await connectToMongoDB(process.env.DB_URI);
+    const db = mongoClient.db('media');
+    const pokemons = db.collection('pokemons');
+
+    const result = await pokemons.aggregate([
+      {
+        $group: {
+          _id: null,
+          moyenneHP: { $avg: "$base.HP" }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          moyenneHP: 1
+        }
+      }
+    ]).toArray();
+
+    return result[0]; 
+
+  } catch (error) {
+    return { error: true, message: error.message };
+  } finally {
+    mongoClient.close();
+  }
+}
+
+
+ async function getTopTypes(limit) {
+  let mongoClient;
+  try {
+    mongoClient = await connectToMongoDB(process.env.DB_URI);
+    const db = mongoClient.db('media');
+    const pokemons = db.collection('pokemons');
+
+    const result = await pokemons.aggregate([
+      { $unwind: "$type" },
+      { $group: { _id: "$type", count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: limit },
+      { $project: { _id: 0, type: "$_id", count: 1 } }
+    ]).toArray();
+
+    return result;
+
+  } catch (error) {
+    return { error: true, message: error.message };
+  } finally {
+    mongoClient.close();
+  }
+}
+
+
+export { getPokemon,
+	getPokemonById,
+	ajoutPokemon,
+	updateOnePokemon,
+	deleteOnePokemon,
+	getPokemonsByFilter,
+	getPokemonBySortedByWeight,
+	getPokemonBySortedByHeight,
+	getPokemonsWithoutEvolution,
+	getPokemonsTopFrenchNameLength,
+	getAverageHp,
+	getTopTypes };

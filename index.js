@@ -4,6 +4,7 @@ import express from 'express';
 
 import filmsRouter from './routers/filmsRouter.js';
 import pokemonRouter from './routers/pokemonRouter.js';
+import statsRouter from './routers/statsRouter.js';
 
 const app = express();
 app.use(express.json());
@@ -16,7 +17,7 @@ app.get('/', (req, res) => {
 
 app.use('/films', filmsRouter);
 app.use('/pokemons', pokemonRouter);
-
+app.use('/stats', statsRouter);
 
 app.get('/salut', (req, res) => res.send('coucou'));
 
