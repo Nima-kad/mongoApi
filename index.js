@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-
-=======
->>>>>>> 9920701f692e636ca0eb7f0ab284280e13eba9ee
 import 'dotenv/config';
 
 import express from 'express';
