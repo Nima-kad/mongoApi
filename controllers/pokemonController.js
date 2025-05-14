@@ -5,8 +5,11 @@ import {
 	updateOnePokemon,
 	deleteOnePokemon,
 	getPokemonsByFilter,
+<<<<<<< HEAD
 	getPokemonBySortedByWeight,
 	getPokemonBySortedByHeight,
+=======
+>>>>>>> 9920701f692e636ca0eb7f0ab284280e13eba9ee
 } from '../models/pokemonsModel.js';
 
 import removeBlankAttributes  from "../utils/removeBlankAttributes.js";
@@ -117,6 +120,7 @@ const getPokemonsFiltered = async (req, res) => {
 	res.json(pokemons);
 };
 
+<<<<<<< HEAD
 const getPokemonsSortedByWeight = async (req, res) => {
     try {
         const limit = parseInt(req.query.limit) 
@@ -148,3 +152,8 @@ export { createOnePokemon,
 	getPokemonsFiltered,
 	getPokemonsSortedByWeight,
 	getPokemonsSortedByheight,}
+=======
+
+
+export { createOnePokemon, getOnePokemonPage,getOnePokemonById,updateOnePokemonById,deleteOnePokemonById,getPokemonsFiltered}
+>>>>>>> 9920701f692e636ca0eb7f0ab284280e13eba9ee
